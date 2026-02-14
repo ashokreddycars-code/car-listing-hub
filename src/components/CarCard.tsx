@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Fuel, Gauge } from "lucide-react";
+import { Fuel, Gauge, Calendar, ArrowRight } from "lucide-react";
 import type { Car } from "@/hooks/useCars";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -16,13 +16,13 @@ const CarCard = ({ car, index }: { car: Car; index: number }) => {
       transition={{ delay: index * 0.08, duration: 0.5 }}
     >
       <Link to={`/car/${car.id}`} className="group block">
-        <div className="card-gradient overflow-hidden rounded-xl border border-border shadow-card transition-all duration-300 hover:shadow-glow hover:border-primary/30">
-          <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
+        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-glow hover:border-primary/30 hover:-translate-y-1">
+          <div className="relative aspect-[16/10] overflow-hidden bg-muted">
             {imageUrl ? (
               <img
                 src={imageUrl}
                 alt={`${car.brand} ${car.model}`}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 loading="lazy"
               />
             ) : (
@@ -31,28 +31,37 @@ const CarCard = ({ car, index }: { car: Car; index: number }) => {
               </div>
             )}
             {car.year && (
-              <span className="absolute top-3 left-3 rounded-md bg-background/80 backdrop-blur px-2 py-1 text-xs font-medium text-foreground">
+              <span className="absolute top-3 left-3 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
                 {car.year}
               </span>
             )}
           </div>
 
-          <div className="p-4">
-            <h3 className="font-heading text-lg font-semibold text-foreground">
-              {car.brand} {car.model}
-            </h3>
-            <p className="mt-1 text-2xl font-bold text-primary">
+          <div className="p-5">
+            <div className="flex items-start justify-between">
+              <h3 className="font-heading text-lg font-bold text-foreground">
+                {car.brand} {car.model}
+              </h3>
+              <ArrowRight className="h-5 w-5 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+            </div>
+            <p className="mt-2 text-2xl font-bold text-primary">
               ₹{car.price.toLocaleString("en-IN")}
             </p>
-            <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Fuel className="h-4 w-4" />
+            <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground border-t border-border pt-4">
+              <span className="flex items-center gap-1.5">
+                <Fuel className="h-4 w-4 text-accent" />
                 {car.fuel_type}
               </span>
-              <span className="flex items-center gap-1">
-                <Gauge className="h-4 w-4" />
+              <span className="flex items-center gap-1.5">
+                <Gauge className="h-4 w-4 text-accent" />
                 {car.km_driven.toLocaleString()} km
               </span>
+              {car.year && (
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="h-4 w-4 text-accent" />
+                  {car.year}
+                </span>
+              )}
             </div>
           </div>
         </div>

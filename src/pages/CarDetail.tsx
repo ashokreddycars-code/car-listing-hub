@@ -1,8 +1,9 @@
 import { useParams, Link } from "react-router-dom";
 import { useCarById } from "@/hooks/useCars";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Fuel, Gauge, Calendar, Phone } from "lucide-react";
+import { ArrowLeft, Fuel, Gauge, Calendar, Phone, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -16,7 +17,7 @@ const CarDetail = () => {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container mx-auto px-4 pt-24">
-          <div className="h-96 animate-pulse rounded-xl bg-secondary" />
+          <div className="h-96 animate-pulse rounded-2xl bg-muted" />
         </div>
       </div>
     );
@@ -38,6 +39,12 @@ const CarDetail = () => {
     supabase.storage.from("car-images").getPublicUrl(img.image_url).data.publicUrl
   );
 
+  const specs = [
+    { icon: Fuel, label: "Fuel Type", value: car.fuel_type },
+    { icon: Gauge, label: "KM Driven", value: car.km_driven.toLocaleString() + " km" },
+    ...(car.year ? [{ icon: Calendar, label: "Year", value: String(car.year) }] : []),
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -49,7 +56,7 @@ const CarDetail = () => {
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Images */}
           <div>
-            <div className="aspect-[16/10] overflow-hidden rounded-xl bg-secondary">
+            <div className="aspect-[16/10] overflow-hidden rounded-2xl bg-muted border border-border shadow-card">
               {images.length > 0 ? (
                 <img src={images[activeImg]} alt={`${car.brand} ${car.model}`} className="h-full w-full object-cover" />
               ) : (
@@ -62,7 +69,7 @@ const CarDetail = () => {
                   <button
                     key={i}
                     onClick={() => setActiveImg(i)}
-                    className={`h-16 w-20 flex-shrink-0 overflow-hidden rounded-md border-2 transition-colors ${
+                    className={`h-16 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
                       i === activeImg ? "border-primary" : "border-border"
                     }`}
                   >
@@ -80,24 +87,14 @@ const CarDetail = () => {
             </h1>
             <p className="mt-2 text-4xl font-bold text-primary">₹{car.price.toLocaleString("en-IN")}</p>
 
-            <div className="mt-6 grid grid-cols-2 gap-4">
-              <div className="card-gradient rounded-lg border border-border p-4">
-                <Fuel className="h-5 w-5 text-primary" />
-                <p className="mt-1 text-sm text-muted-foreground">Fuel Type</p>
-                <p className="font-semibold text-foreground">{car.fuel_type}</p>
-              </div>
-              <div className="card-gradient rounded-lg border border-border p-4">
-                <Gauge className="h-5 w-5 text-primary" />
-                <p className="mt-1 text-sm text-muted-foreground">KM Driven</p>
-                <p className="font-semibold text-foreground">{car.km_driven.toLocaleString()}</p>
-              </div>
-              {car.year && (
-                <div className="card-gradient rounded-lg border border-border p-4">
-                  <Calendar className="h-5 w-5 text-primary" />
-                  <p className="mt-1 text-sm text-muted-foreground">Year</p>
-                  <p className="font-semibold text-foreground">{car.year}</p>
+            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+              {specs.map((s) => (
+                <div key={s.label} className="rounded-xl border border-border bg-card p-4 shadow-card">
+                  <s.icon className="h-5 w-5 text-primary" />
+                  <p className="mt-1 text-xs text-muted-foreground">{s.label}</p>
+                  <p className="font-semibold text-foreground">{s.value}</p>
                 </div>
-              )}
+              ))}
             </div>
 
             {car.description && (
@@ -107,27 +104,22 @@ const CarDetail = () => {
               </div>
             )}
 
-            {car.contact_phone && (
-              <a href={`tel:${car.contact_phone}`}>
-                <Button className="mt-6 w-full hero-gradient text-primary-foreground font-semibold" size="lg">
-                  <Phone className="mr-2 h-5 w-5" /> Call Now
+            <div className="mt-8 space-y-3">
+              <a href="tel:+919000771660">
+                <Button className="w-full hero-gradient text-primary-foreground font-semibold" size="lg">
+                  <Phone className="mr-2 h-5 w-5" /> Call Now — 9000 771 660
                 </Button>
               </a>
-            )}
-            {car.contact_whatsapp && (
-              <a
-                href={`https://wa.me/${car.contact_whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="outline" className="mt-3 w-full" size="lg">
-                  WhatsApp
+              <a href="https://wa.me/919000771660?text=Hi%2C%20I%27m%20interested%20in%20the%20{car.brand}%20{car.model}" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground mt-3" size="lg">
+                  <MessageCircle className="mr-2 h-5 w-5" /> Chat on WhatsApp
                 </Button>
               </a>
-            )}
+            </div>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

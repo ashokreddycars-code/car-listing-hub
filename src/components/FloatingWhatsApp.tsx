@@ -18,7 +18,7 @@ const FloatingWhatsApp = () => {
       transition={{ delay: 0.5, duration: 0.4 }}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
-      className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full hero-gradient shadow-glow transition-all duration-300 hover:shadow-lg"
+      className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-lg transition-all duration-300 hover:shadow-xl"
       aria-label="Contact on WhatsApp"
     >
       <MessageCircle className="h-6 w-6 text-primary-foreground" />

@@ -1,11 +1,20 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Phone } from "lucide-react";
+import { Search, Phone, Shield, Car, Award, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-banner.jpg";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import CarCard from "@/components/CarCard";
 import CarFiltersBar from "@/components/CarFiltersBar";
 import { useCars, type CarFilters } from "@/hooks/useCars";
+import { Button } from "@/components/ui/button";
+
+const highlights = [
+  { icon: Shield, title: "Trusted Quality", desc: "Every car inspected and certified" },
+  { icon: Car, title: "Wide Selection", desc: "Hatchbacks, sedans, SUVs & more" },
+  { icon: Award, title: "Best Prices", desc: "Honest pricing, no hidden costs" },
+];
 
 const Index = () => {
   const [filters, setFilters] = useState<CarFilters>({});
@@ -16,13 +25,13 @@ const Index = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative flex h-[70vh] items-center justify-center overflow-hidden">
+      <section className="relative flex h-[75vh] items-center justify-center overflow-hidden">
         <img
           src={heroImage}
           alt="Luxury cars showroom"
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
         <div className="relative z-10 text-center px-4">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -38,19 +47,66 @@ const Index = () => {
             transition={{ delay: 0.3, duration: 0.6 }}
             className="mt-4 text-lg text-muted-foreground md:text-xl"
           >
-            Trusted Cars. Honest Deals.
+            Trusted Cars. Honest Deals. — Hyderabad's Favorite Pre-Owned Car Destination
           </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-4"
+          >
+            <a href="tel:+919000771660">
+              <Button size="lg" className="hero-gradient text-primary-foreground font-semibold">
+                <Phone className="mr-2 h-5 w-5" /> Call Now
+              </Button>
+            </a>
+            <Link to="/about">
+              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                Learn More <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Highlights */}
+      <section className="container mx-auto px-4 -mt-16 relative z-20">
+        <div className="grid gap-4 sm:grid-cols-3">
+          {highlights.map((h, i) => (
+            <motion.div
+              key={h.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 + i * 0.1 }}
+              className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5 shadow-card"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl hero-gradient flex-shrink-0">
+                <h.icon className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h3 className="font-heading font-semibold text-foreground">{h.title}</h3>
+                <p className="text-sm text-muted-foreground">{h.desc}</p>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
       {/* Listings */}
-      <section className="container mx-auto px-4 py-12">
+      <section className="container mx-auto px-4 py-16">
+        <div className="text-center mb-8">
+          <h2 className="font-heading text-3xl font-bold text-foreground md:text-4xl">
+            Our <span className="text-gradient">Car Collection</span>
+          </h2>
+          <p className="mt-2 text-muted-foreground">Browse our handpicked selection of quality pre-owned cars</p>
+        </div>
+
         <CarFiltersBar filters={filters} onChange={setFilters} />
 
         {isLoading ? (
           <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-80 animate-pulse rounded-xl bg-secondary" />
+              <div key={i} className="h-80 animate-pulse rounded-2xl bg-muted" />
             ))}
           </div>
         ) : cars && cars.length > 0 ? (
@@ -68,35 +124,31 @@ const Index = () => {
         )}
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-12 text-muted-foreground">
-        <div className="container mx-auto px-4 grid gap-8 md:grid-cols-3">
-          <div>
-            <h3 className="font-heading text-lg font-semibold text-foreground mb-2">Ashok Reddy Cars</h3>
-            <p className="text-sm">Trusted Cars. Honest Deals.</p>
-            <p className="mt-2 text-sm flex items-center gap-1">
-              <Phone className="h-4 w-4" />
-              <a href="tel:+919000771660" className="hover:text-primary transition-colors">9000 771 660</a>
-            </p>
-          </div>
-          <div>
-            <h3 className="font-heading text-lg font-semibold text-foreground mb-2">Our Location</h3>
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.0795988090067!2d78.40519599999999!3d17.503713299999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb910263c39411%3A0x47305d0373141a0d!2sAshok%20Reddy%20Cars!5e0!3m2!1sen!2sin!4v1771041881594!5m2!1sen!2sin"
-              width="100%"
-              height="180"
-              style={{ border: 0, borderRadius: "0.5rem" }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Ashok Reddy Cars location"
-            />
-          </div>
-          <div className="flex flex-col items-start md:items-end justify-between">
-            <p className="text-xs">© {new Date().getFullYear()} Ashok Reddy Cars. All rights reserved.</p>
+      {/* CTA */}
+      <section className="hero-gradient py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="font-heading text-3xl font-bold text-primary-foreground md:text-4xl">
+            Ready to Find Your Dream Car?
+          </h2>
+          <p className="mt-3 text-primary-foreground/80 max-w-xl mx-auto">
+            Visit our showroom in Kukatpally, Hyderabad or give us a call. We're here to help you find the perfect car.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <a href="tel:+919000771660">
+              <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+                <Phone className="mr-2 h-5 w-5" /> 9000 771 660
+              </Button>
+            </a>
+            <Link to="/contact">
+              <Button size="lg" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-semibold">
+                Contact Us
+              </Button>
+            </Link>
           </div>
         </div>
-      </footer>
+      </section>
+
+      <Footer />
     </div>
   );
 };
