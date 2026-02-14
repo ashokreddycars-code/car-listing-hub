@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
-import { Car, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import logo from "@/assets/logo.jpeg";
 
 const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
@@ -10,9 +11,9 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
-          <Car className="h-7 w-7 text-primary" />
-          <span className="font-heading text-xl font-bold text-foreground">
-            Auto<span className="text-primary">Hub</span>
+          <img src={logo} alt="Ashok Reddy Cars" className="h-10 w-auto rounded" />
+          <span className="font-heading text-lg font-bold text-foreground hidden sm:inline">
+            Ashok Reddy <span className="text-primary">Cars</span>
           </span>
         </Link>
 
