@@ -17,7 +17,7 @@ const CarFiltersBar = ({ filters, onChange }: Props) => {
   const hasFilters = filters.brand || filters.fuelType || filters.search || filters.minPrice || filters.maxPrice;
 
   return (
-    <div className="card-gradient rounded-xl border border-border p-4 shadow-card">
+    <div className="rounded-2xl border border-border bg-card p-4 shadow-card">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <div className="relative lg:col-span-2">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -25,7 +25,7 @@ const CarFiltersBar = ({ filters, onChange }: Props) => {
             placeholder="Search brand or model..."
             value={filters.search ?? ""}
             onChange={(e) => onChange({ ...filters, search: e.target.value || undefined })}
-            className="pl-10 bg-secondary border-border"
+            className="pl-10 bg-muted border-border"
           />
         </div>
 
@@ -33,7 +33,7 @@ const CarFiltersBar = ({ filters, onChange }: Props) => {
           value={filters.brand ?? "all"}
           onValueChange={(v) => onChange({ ...filters, brand: v === "all" ? undefined : v })}
         >
-          <SelectTrigger className="bg-secondary border-border">
+          <SelectTrigger className="bg-muted border-border">
             <SelectValue placeholder="Brand" />
           </SelectTrigger>
           <SelectContent>
@@ -48,7 +48,7 @@ const CarFiltersBar = ({ filters, onChange }: Props) => {
           value={filters.fuelType ?? "all"}
           onValueChange={(v) => onChange({ ...filters, fuelType: v === "all" ? undefined : v })}
         >
-          <SelectTrigger className="bg-secondary border-border">
+          <SelectTrigger className="bg-muted border-border">
             <SelectValue placeholder="Fuel Type" />
           </SelectTrigger>
           <SelectContent>

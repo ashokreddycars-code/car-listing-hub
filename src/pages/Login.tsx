@@ -35,8 +35,8 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-sm card-gradient rounded-xl border border-border p-8 shadow-card">
+    <div className="flex min-h-screen items-center justify-center bg-muted/50 px-4">
+      <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-8 shadow-card">
         <div className="mb-6 text-center">
           <img src={logo} alt="Ashok Reddy Cars" className="mx-auto h-14 w-auto rounded" />
           <h1 className="mt-3 font-heading text-2xl font-bold text-foreground">
@@ -50,26 +50,11 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="mt-1 bg-secondary"
-            />
+            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="mt-1 bg-muted" />
           </div>
           <div>
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              className="mt-1 bg-secondary"
-            />
+            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} className="mt-1 bg-muted" />
           </div>
           <Button type="submit" disabled={loading} className="w-full hero-gradient text-primary-foreground font-semibold">
             {loading ? "Please wait..." : isSignUp ? "Create Account" : "Sign In"}
