@@ -2,8 +2,8 @@ import { MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const FloatingWhatsApp = () => {
-  const phoneNumber = "919999999999"; // Replace with actual phone number
-  const message = "Hi, I'm interested in your car listings. Can you help?";
+  const phoneNumber = "919000771660";
+  const message = "Hi, I'm interested in a car at Ashok Reddy Cars. Can you help?";
 
   const handleClick = () => {
     const encodedMessage = encodeURIComponent(message);

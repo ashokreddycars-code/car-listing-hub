@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Car } from "lucide-react";
+import logo from "@/assets/logo.jpeg";
 import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
@@ -38,7 +38,7 @@ const Login = () => {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm card-gradient rounded-xl border border-border p-8 shadow-card">
         <div className="mb-6 text-center">
-          <Car className="mx-auto h-10 w-10 text-primary" />
+          <img src={logo} alt="Ashok Reddy Cars" className="mx-auto h-14 w-auto rounded" />
           <h1 className="mt-3 font-heading text-2xl font-bold text-foreground">
             {isSignUp ? "Create Admin Account" : "Admin Login"}
           </h1>
