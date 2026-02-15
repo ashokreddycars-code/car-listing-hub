@@ -23,6 +23,10 @@ export interface CarFilters {
   minPrice?: number;
   maxPrice?: number;
   search?: string;
+  status?: "available" | "sold" | "all";
+  minYear?: number;
+  maxYear?: number;
+  sortBy?: "price_asc" | "price_desc" | "year_desc" | "year_asc" | "km_asc" | "km_desc" | "newest";
 }
 
 export const useCars = (filters?: CarFilters) => {
@@ -31,15 +35,33 @@ export const useCars = (filters?: CarFilters) => {
     queryFn: async () => {
       let query = supabase
         .from("cars")
-        .select("*, car_images(id, image_url, display_order)")
-        .eq("is_sold", false)
-        .order("created_at", { ascending: false });
+        .select("*, car_images(id, image_url, display_order)");
+
+      // Status filter (default: available only)
+      const status = filters?.status ?? "available";
+      if (status === "available") query = query.eq("is_sold", false);
+      else if (status === "sold") query = query.eq("is_sold", true);
+      // "all" = no filter
 
       if (filters?.brand) query = query.eq("brand", filters.brand);
       if (filters?.fuelType) query = query.eq("fuel_type", filters.fuelType);
       if (filters?.minPrice) query = query.gte("price", filters.minPrice);
       if (filters?.maxPrice) query = query.lte("price", filters.maxPrice);
+      if (filters?.minYear) query = query.gte("year", filters.minYear);
+      if (filters?.maxYear) query = query.lte("year", filters.maxYear);
       if (filters?.search) query = query.or(`brand.ilike.%${filters.search}%,model.ilike.%${filters.search}%`);
+
+      // Sorting
+      const sortBy = filters?.sortBy ?? "newest";
+      switch (sortBy) {
+        case "price_asc": query = query.order("price", { ascending: true }); break;
+        case "price_desc": query = query.order("price", { ascending: false }); break;
+        case "year_desc": query = query.order("year", { ascending: false, nullsFirst: false }); break;
+        case "year_asc": query = query.order("year", { ascending: true, nullsFirst: false }); break;
+        case "km_asc": query = query.order("km_driven", { ascending: true }); break;
+        case "km_desc": query = query.order("km_driven", { ascending: false }); break;
+        default: query = query.order("created_at", { ascending: false }); break;
+      }
 
       const { data, error } = await query;
       if (error) throw error;
