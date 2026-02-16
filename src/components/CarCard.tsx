@@ -17,13 +17,13 @@ const CarCard = ({ car, index }: { car: Car; index: number }) => {
       transition={{ delay: index * 0.08, duration: 0.5 }}
     >
       <Link to={`/car/${car.id}`} className="group block">
-        <div className={`overflow-hidden rounded-2xl border bg-card shadow-card transition-all duration-300 hover:shadow-glow hover:-translate-y-1 ${car.is_sold ? "border-muted opacity-80" : "border-border hover:border-primary/30"}`}>
+        <div className={`overflow-hidden rounded-2xl border bg-card shadow-card transition-all duration-300 hover:shadow-glow hover:-translate-y-1 ${car.status === "sold" ? "border-muted opacity-80" : "border-border hover:border-primary/30"}`}>
           <div className="relative aspect-[16/10] overflow-hidden bg-muted">
             {imageUrl ? (
               <img
                 src={imageUrl}
                 alt={`${car.brand} ${car.model}`}
-                className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${car.is_sold ? "grayscale-[30%]" : ""}`}
+                className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${car.status === "sold" ? "grayscale-[30%]" : ""}`}
                 loading="lazy"
               />
             ) : (
@@ -33,9 +33,13 @@ const CarCard = ({ car, index }: { car: Car; index: number }) => {
             )}
             {/* Status Badge */}
             <div className="absolute top-3 left-3 flex gap-2">
-              {car.is_sold ? (
+              {car.status === "sold" ? (
                 <Badge className="bg-destructive text-destructive-foreground font-semibold text-xs px-3 py-1">
                   SOLD
+                </Badge>
+              ) : car.status === "upcoming" ? (
+                <Badge className="bg-yellow-500 text-white font-semibold text-xs px-3 py-1">
+                  UPCOMING
                 </Badge>
               ) : (
                 <Badge className="hero-gradient text-primary-foreground font-semibold text-xs px-3 py-1">
@@ -57,7 +61,7 @@ const CarCard = ({ car, index }: { car: Car; index: number }) => {
               </h3>
               <ArrowRight className="h-5 w-5 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
             </div>
-            <p className={`mt-2 text-2xl font-bold ${car.is_sold ? "text-muted-foreground line-through" : "text-primary"}`}>
+            <p className={`mt-2 text-2xl font-bold ${car.status === "sold" ? "text-muted-foreground line-through" : "text-primary"}`}>
               ₹{car.price.toLocaleString("en-IN")}
             </p>
             {car.description && (

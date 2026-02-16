@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useCarById } from "@/hooks/useCars";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import EMICalculator from "@/components/EMICalculator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Fuel, Gauge, Calendar, Phone, MessageCircle, Share2, CheckCircle, AlertTriangle } from "lucide-react";
@@ -63,6 +64,14 @@ const CarDetail = () => {
     `Hi, I'm interested in the ${car.brand} ${car.model} (₹${car.price.toLocaleString("en-IN")}) listed on Ashok Reddy Cars. Is it still available?`
   );
 
+  const statusBadge = car.status === "sold" ? (
+    <Badge className="bg-destructive text-destructive-foreground font-bold text-sm px-4 py-1.5">SOLD</Badge>
+  ) : car.status === "upcoming" ? (
+    <Badge className="bg-yellow-500 text-white font-bold text-sm px-4 py-1.5">UPCOMING</Badge>
+  ) : (
+    <Badge className="hero-gradient text-primary-foreground font-bold text-sm px-4 py-1.5">AVAILABLE</Badge>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -85,18 +94,7 @@ const CarDetail = () => {
               ) : (
                 <div className="flex h-full items-center justify-center text-muted-foreground">No Image</div>
               )}
-              {/* Status overlay */}
-              <div className="absolute top-4 left-4">
-                {car.is_sold ? (
-                  <Badge className="bg-destructive text-destructive-foreground font-bold text-sm px-4 py-1.5">
-                    SOLD
-                  </Badge>
-                ) : (
-                  <Badge className="hero-gradient text-primary-foreground font-bold text-sm px-4 py-1.5">
-                    AVAILABLE
-                  </Badge>
-                )}
-              </div>
+              <div className="absolute top-4 left-4">{statusBadge}</div>
             </div>
             {images.length > 1 && (
               <div className="mt-3 flex gap-2 overflow-x-auto pb-2">
@@ -122,11 +120,14 @@ const CarDetail = () => {
               {car.brand} {car.model}
             </h1>
             <div className="mt-2 flex items-center gap-3">
-              <p className={`text-4xl font-bold ${car.is_sold ? "text-muted-foreground line-through" : "text-primary"}`}>
+              <p className={`text-4xl font-bold ${car.status === "sold" ? "text-muted-foreground line-through" : "text-primary"}`}>
                 ₹{car.price.toLocaleString("en-IN")}
               </p>
-              {car.is_sold && (
+              {car.status === "sold" && (
                 <span className="text-sm text-destructive font-semibold">(Sold Out)</span>
+              )}
+              {car.status === "upcoming" && (
+                <span className="text-sm text-yellow-600 font-semibold">(Coming Soon)</span>
               )}
             </div>
 
@@ -153,14 +154,7 @@ const CarDetail = () => {
             <div className="mt-6 rounded-xl border border-border bg-muted/50 p-4">
               <h3 className="font-heading text-sm font-semibold text-foreground mb-3">Buying from Ashok Reddy Cars includes:</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {[
-                  "Complete documentation",
-                  "RTO transfer assistance",
-                  "Insurance guidance",
-                  "Genuine KM history",
-                  "Multi-point inspection",
-                  "Post-sale support",
-                ].map((item) => (
+                {["Complete documentation", "RTO transfer assistance", "Insurance guidance", "Genuine KM history", "Multi-point inspection", "Post-sale support"].map((item) => (
                   <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
                     <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
                     {item}
@@ -171,7 +165,7 @@ const CarDetail = () => {
 
             {/* Contact Buttons */}
             <div className="mt-8 space-y-3">
-              {car.is_sold ? (
+              {car.status === "sold" ? (
                 <div className="rounded-xl border border-border bg-muted/50 p-4 text-center">
                   <AlertTriangle className="mx-auto h-8 w-8 text-muted-foreground" />
                   <p className="mt-2 font-heading font-semibold text-foreground">This car has been sold</p>
@@ -179,6 +173,16 @@ const CarDetail = () => {
                   <a href="tel:+919000771660" className="mt-3 inline-block">
                     <Button className="hero-gradient text-primary-foreground font-semibold">
                       <Phone className="mr-2 h-4 w-4" /> Call for Similar Cars
+                    </Button>
+                  </a>
+                </div>
+              ) : car.status === "upcoming" ? (
+                <div className="rounded-xl border border-yellow-300 bg-yellow-50 p-4 text-center">
+                  <p className="font-heading font-semibold text-foreground">🔔 This car is coming soon!</p>
+                  <p className="text-sm text-muted-foreground mt-1">Call us to reserve or get notified</p>
+                  <a href="tel:+919000771660" className="mt-3 inline-block">
+                    <Button className="hero-gradient text-primary-foreground font-semibold">
+                      <Phone className="mr-2 h-4 w-4" /> Reserve Now — 9000 771 660
                     </Button>
                   </a>
                 </div>
@@ -197,6 +201,13 @@ const CarDetail = () => {
                 </>
               )}
             </div>
+
+            {/* EMI Calculator */}
+            {car.status !== "sold" && (
+              <div className="mt-8">
+                <EMICalculator carPrice={car.price} />
+              </div>
+            )}
           </div>
         </div>
       </div>

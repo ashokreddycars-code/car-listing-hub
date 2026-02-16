@@ -147,6 +147,7 @@ const CarFiltersBar = ({ filters, onChange }: Props) => {
             <SelectContent>
               <SelectItem value="available">Available</SelectItem>
               <SelectItem value="sold">Sold</SelectItem>
+              <SelectItem value="upcoming">Upcoming</SelectItem>
               <SelectItem value="all">All Cars</SelectItem>
             </SelectContent>
           </Select>
