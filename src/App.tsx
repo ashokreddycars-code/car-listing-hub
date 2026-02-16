@@ -11,6 +11,8 @@ import CarDetail from "./pages/CarDetail";
 import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import SellCar from "./pages/SellCar";
+import Compare from "./pages/Compare";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +31,8 @@ const App = () => (
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/sell" element={<SellCar />} />
+            <Route path="/compare" element={<Compare />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <FloatingWhatsApp />

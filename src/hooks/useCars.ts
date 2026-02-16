@@ -13,6 +13,7 @@ export interface Car {
   contact_phone: string | null;
   contact_whatsapp: string | null;
   is_sold: boolean;
+  status: "available" | "sold" | "upcoming";
   created_at: string;
   images: { id: string; image_url: string; display_order: number }[];
 }
@@ -23,7 +24,7 @@ export interface CarFilters {
   minPrice?: number;
   maxPrice?: number;
   search?: string;
-  status?: "available" | "sold" | "all";
+  status?: "available" | "sold" | "upcoming" | "all";
   minYear?: number;
   maxYear?: number;
   sortBy?: "price_asc" | "price_desc" | "year_desc" | "year_asc" | "km_asc" | "km_desc" | "newest";
@@ -39,8 +40,9 @@ export const useCars = (filters?: CarFilters) => {
 
       // Status filter (default: available only)
       const status = filters?.status ?? "available";
-      if (status === "available") query = query.eq("is_sold", false);
-      else if (status === "sold") query = query.eq("is_sold", true);
+      if (status === "available") query = query.eq("status", "available");
+      else if (status === "sold") query = query.eq("status", "sold");
+      else if (status === "upcoming") query = query.eq("status", "upcoming");
       // "all" = no filter
 
       if (filters?.brand) query = query.eq("brand", filters.brand);
@@ -100,7 +102,7 @@ export const useBrands = () => {
       const { data, error } = await supabase
         .from("cars")
         .select("brand")
-        .eq("is_sold", false);
+        .eq("status", "available");
       if (error) throw error;
       const brands = [...new Set((data ?? []).map((c) => c.brand))].sort();
       return brands;

@@ -77,6 +77,7 @@ export type Database = {
           km_driven: number
           model: string
           price: number
+          status: string
           updated_at: string
           user_id: string
           year: number | null
@@ -93,6 +94,7 @@ export type Database = {
           km_driven?: number
           model: string
           price: number
+          status?: string
           updated_at?: string
           user_id: string
           year?: number | null
@@ -109,8 +111,66 @@ export type Database = {
           km_driven?: number
           model?: string
           price?: number
+          status?: string
           updated_at?: string
           user_id?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
+      sell_inquiries: {
+        Row: {
+          admin_notes: string | null
+          brand: string
+          created_at: string
+          description: string | null
+          expected_price: number | null
+          fuel_type: string | null
+          id: string
+          km_driven: number | null
+          model: string
+          owner_name: string
+          phone: string
+          status: string
+          transmission: string | null
+          updated_at: string
+          whatsapp: string | null
+          year: number | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          brand: string
+          created_at?: string
+          description?: string | null
+          expected_price?: number | null
+          fuel_type?: string | null
+          id?: string
+          km_driven?: number | null
+          model: string
+          owner_name: string
+          phone: string
+          status?: string
+          transmission?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+          year?: number | null
+        }
+        Update: {
+          admin_notes?: string | null
+          brand?: string
+          created_at?: string
+          description?: string | null
+          expected_price?: number | null
+          fuel_type?: string | null
+          id?: string
+          km_driven?: number | null
+          model?: string
+          owner_name?: string
+          phone?: string
+          status?: string
+          transmission?: string | null
+          updated_at?: string
+          whatsapp?: string | null
           year?: number | null
         }
         Relationships: []
