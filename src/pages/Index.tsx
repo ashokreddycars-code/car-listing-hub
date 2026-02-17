@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import CarCard from "@/components/CarCard";
 import CarFiltersBar from "@/components/CarFiltersBar";
 import { useCars, type CarFilters } from "@/hooks/useCars";
+import { useFeaturedCars } from "@/hooks/useFeaturedCars";
 import { Button } from "@/components/ui/button";
 
 const highlights = [
@@ -54,6 +55,7 @@ const services = [
 const Index = () => {
   const [filters, setFilters] = useState<CarFilters>({});
   const { data: cars, isLoading } = useCars(filters);
+  const { data: featuredCars } = useFeaturedCars();
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,6 +149,23 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Featured Cars */}
+      {featuredCars && featuredCars.length > 0 && (
+        <section className="container mx-auto px-4 pb-8">
+          <div className="text-center mb-8">
+            <h2 className="font-heading text-3xl font-bold text-foreground md:text-4xl">
+              ⭐ <span className="text-gradient">Featured</span> Cars
+            </h2>
+            <p className="mt-2 text-muted-foreground">Handpicked top deals you shouldn't miss</p>
+          </div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredCars.map((car, i) => (
+              <CarCard key={car.id} car={car} index={i} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Listings */}
       <section className="container mx-auto px-4 pb-16">
