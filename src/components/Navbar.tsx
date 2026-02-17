@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
-import { Phone, Menu, X } from "lucide-react";
+import { Phone, Menu, X, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.jpeg";
 import { useState } from "react";
@@ -15,6 +16,7 @@ const navLinks = [
 
 const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
+  const { isDark, toggle: toggleTheme } = useTheme();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -42,6 +44,9 @@ const Navbar = () => {
           <a href="tel:+919000771660" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors">
             <Phone className="h-4 w-4" /> 9000 771 660
           </a>
+          <button onClick={toggleTheme} className="text-muted-foreground hover:text-foreground transition-colors p-1" aria-label="Toggle theme">
+            {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
           {isAdmin && (
             <Link to="/admin">
               <Button size="sm" variant="outline">Dashboard</Button>
@@ -78,6 +83,10 @@ const Navbar = () => {
           <a href="tel:+919000771660" className="flex items-center gap-1 py-2 text-sm text-muted-foreground">
             <Phone className="h-4 w-4" /> 9000 771 660
           </a>
+          <button onClick={toggleTheme} className="flex items-center gap-2 py-2 text-sm text-muted-foreground hover:text-foreground">
+            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {isDark ? "Light Mode" : "Dark Mode"}
+          </button>
           {isAdmin && (
             <Link to="/admin" onClick={() => setMobileOpen(false)}>
               <Button size="sm" variant="outline" className="w-full">Dashboard</Button>

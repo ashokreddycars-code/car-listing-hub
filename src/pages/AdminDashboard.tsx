@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Car, BarChart3, Download, Eye, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Plus, Trash2, Car, BarChart3, Download, Eye, Clock, CheckCircle, XCircle, Star } from "lucide-react";
 
 const FUEL_TYPES = ["Petrol", "Diesel", "Electric", "CNG", "Hybrid"];
 const STATUS_OPTIONS = [
@@ -257,17 +257,33 @@ const AdminDashboard = () => {
                       <p className="text-sm text-primary font-semibold">₹{Number(car.price).toLocaleString("en-IN")}</p>
                       {car.year && <p className="text-xs text-muted-foreground">{car.year} · {car.fuel_type} · {Number(car.km_driven).toLocaleString()} km</p>}
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Select value={car.status} onValueChange={(v) => handleStatusChange(car.id, v)}>
-                        <SelectTrigger className="w-[130px] bg-muted text-xs"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {STATUS_OPTIONS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(car.id)} className="text-destructive hover:text-destructive">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                     <div className="flex items-center gap-2">
+                       <Select value={car.status} onValueChange={(v) => handleStatusChange(car.id, v)}>
+                         <SelectTrigger className="w-[130px] bg-muted text-xs"><SelectValue /></SelectTrigger>
+                         <SelectContent>
+                           {STATUS_OPTIONS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+                         </SelectContent>
+                       </Select>
+                       <Button
+                         variant="ghost"
+                         size="icon"
+                         onClick={async () => {
+                           const { error } = await supabase.from("cars").update({ is_featured: !car.is_featured }).eq("id", car.id);
+                           if (!error) {
+                             toast({ title: car.is_featured ? "Removed from featured" : "Marked as featured" });
+                             queryClient.invalidateQueries({ queryKey: ["admin-cars"] });
+                             queryClient.invalidateQueries({ queryKey: ["featured-cars"] });
+                           }
+                         }}
+                         className={car.is_featured ? "text-primary" : "text-muted-foreground"}
+                         title={car.is_featured ? "Remove from featured" : "Mark as featured"}
+                       >
+                         <Star className={`h-4 w-4 ${car.is_featured ? "fill-primary" : ""}`} />
+                       </Button>
+                       <Button variant="ghost" size="icon" onClick={() => handleDelete(car.id)} className="text-destructive hover:text-destructive">
+                         <Trash2 className="h-4 w-4" />
+                       </Button>
+                     </div>
                   </div>
                 ))}
               </div>
