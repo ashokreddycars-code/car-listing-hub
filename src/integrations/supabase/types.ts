@@ -73,6 +73,7 @@ export type Database = {
           description: string | null
           fuel_type: string
           id: string
+          is_featured: boolean
           is_sold: boolean
           km_driven: number
           model: string
@@ -90,6 +91,7 @@ export type Database = {
           description?: string | null
           fuel_type?: string
           id?: string
+          is_featured?: boolean
           is_sold?: boolean
           km_driven?: number
           model: string
@@ -107,6 +109,7 @@ export type Database = {
           description?: string | null
           fuel_type?: string
           id?: string
+          is_featured?: boolean
           is_sold?: boolean
           km_driven?: number
           model?: string
