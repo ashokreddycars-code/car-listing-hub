@@ -35,6 +35,41 @@ const SellCar = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Client-side validation
+    if (form.owner_name.length > 100) {
+      toast({ title: "Error", description: "Name must be less than 100 characters", variant: "destructive" });
+      return;
+    }
+    if (form.phone.length > 20 || !/^[\d+\s-]{7,20}$/.test(form.phone)) {
+      toast({ title: "Error", description: "Please enter a valid phone number", variant: "destructive" });
+      return;
+    }
+    if (form.whatsapp && (form.whatsapp.length > 20 || !/^[\d+\s-]{7,20}$/.test(form.whatsapp))) {
+      toast({ title: "Error", description: "Please enter a valid WhatsApp number", variant: "destructive" });
+      return;
+    }
+    if (form.brand.length > 100 || form.model.length > 100) {
+      toast({ title: "Error", description: "Brand/Model must be less than 100 characters", variant: "destructive" });
+      return;
+    }
+    if (form.year && (Number(form.year) < 1900 || Number(form.year) > 2100)) {
+      toast({ title: "Error", description: "Please enter a valid year", variant: "destructive" });
+      return;
+    }
+    if (form.km_driven && Number(form.km_driven) < 0) {
+      toast({ title: "Error", description: "KM driven cannot be negative", variant: "destructive" });
+      return;
+    }
+    if (form.expected_price && Number(form.expected_price) <= 0) {
+      toast({ title: "Error", description: "Expected price must be a positive number", variant: "destructive" });
+      return;
+    }
+    if (form.description && form.description.length > 2000) {
+      toast({ title: "Error", description: "Description must be less than 2000 characters", variant: "destructive" });
+      return;
+    }
+
     setSubmitting(true);
     try {
       const { error } = await supabase.from("sell_inquiries").insert({
