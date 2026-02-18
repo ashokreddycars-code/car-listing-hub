@@ -11,7 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Car, BarChart3, Download, Eye, Clock, CheckCircle, XCircle, Star } from "lucide-react";
+import { Plus, Trash2, Car, BarChart3, Download, Eye, Clock, CheckCircle, XCircle, Star, Pencil } from "lucide-react";
+import AdminCarEditModal from "@/components/AdminCarEditModal";
 
 const FUEL_TYPES = ["Petrol", "Diesel", "Electric", "CNG", "Hybrid"];
 const STATUS_OPTIONS = [
@@ -33,6 +34,7 @@ const AdminDashboard = () => {
   const [images, setImages] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<"listings" | "inquiries">("listings");
+  const [editingCar, setEditingCar] = useState<any>(null);
 
   const { data: myCars, isLoading } = useQuery({
     queryKey: ["admin-cars"],
@@ -280,6 +282,9 @@ const AdminDashboard = () => {
                        >
                          <Star className={`h-4 w-4 ${car.is_featured ? "fill-primary" : ""}`} />
                        </Button>
+                       <Button variant="ghost" size="icon" onClick={() => setEditingCar(car)} className="text-muted-foreground hover:text-foreground" title="Edit car details">
+                         <Pencil className="h-4 w-4" />
+                       </Button>
                        <Button variant="ghost" size="icon" onClick={() => handleDelete(car.id)} className="text-destructive hover:text-destructive">
                          <Trash2 className="h-4 w-4" />
                        </Button>
@@ -332,6 +337,14 @@ const AdminDashboard = () => {
               <p className="text-muted-foreground text-center py-10">No sell inquiries yet.</p>
             )}
           </div>
+        )}
+
+        {editingCar && (
+          <AdminCarEditModal
+            car={editingCar}
+            open={!!editingCar}
+            onClose={() => setEditingCar(null)}
+          />
         )}
       </div>
     </div>
