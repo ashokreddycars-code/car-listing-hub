@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export interface Car {
   id: string;
+  user_id: string;
   brand: string;
   model: string;
   price: number;

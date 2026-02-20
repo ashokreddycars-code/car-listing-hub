@@ -183,6 +183,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_sold_cars: { Args: never; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
