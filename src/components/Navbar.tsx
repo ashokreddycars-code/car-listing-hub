@@ -1,10 +1,17 @@
 import { Link, useLocation } from "react-router-dom";
-import { Phone, Menu, X, Sun, Moon } from "lucide-react";
+import { Phone, Menu, X, Sun, Moon, User, LayoutDashboard, LogOut, Plus } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.jpeg";
 import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -47,16 +54,36 @@ const Navbar = () => {
           <button onClick={toggleTheme} className="text-muted-foreground hover:text-foreground transition-colors p-1" aria-label="Toggle theme">
             {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </button>
-          {isAdmin && (
-            <Link to="/admin">
-              <Button size="sm" variant="outline">Dashboard</Button>
-            </Link>
-          )}
           {user ? (
-            <Button size="sm" variant="ghost" onClick={signOut} className="text-muted-foreground">Sign Out</Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="gap-2">
+                  <User className="h-4 w-4" />
+                  <span className="max-w-[120px] truncate">{user.email?.split("@")[0]}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {isAdmin && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className="flex items-center gap-2 cursor-pointer">
+                      <LayoutDashboard className="h-4 w-4" /> Admin Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem asChild>
+                  <Link to="/sell" className="flex items-center gap-2 cursor-pointer">
+                    <Plus className="h-4 w-4" /> Post New Car
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
+                  <LogOut className="h-4 w-4 mr-2" /> Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Link to="/login">
-              <Button size="sm" className="hero-gradient text-primary-foreground font-semibold">Admin Login</Button>
+              <Button size="sm" className="hero-gradient text-primary-foreground font-semibold">Sign In</Button>
             </Link>
           )}
         </div>
@@ -87,16 +114,27 @@ const Navbar = () => {
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             {isDark ? "Light Mode" : "Dark Mode"}
           </button>
-          {isAdmin && (
-            <Link to="/admin" onClick={() => setMobileOpen(false)}>
-              <Button size="sm" variant="outline" className="w-full">Dashboard</Button>
-            </Link>
-          )}
           {user ? (
-            <Button size="sm" variant="ghost" onClick={signOut} className="w-full text-muted-foreground">Sign Out</Button>
+            <>
+              {isAdmin && (
+                <Link to="/admin" onClick={() => setMobileOpen(false)}>
+                  <Button size="sm" variant="outline" className="w-full gap-2">
+                    <LayoutDashboard className="h-4 w-4" /> Admin Dashboard
+                  </Button>
+                </Link>
+              )}
+              <Link to="/sell" onClick={() => setMobileOpen(false)}>
+                <Button size="sm" className="w-full hero-gradient text-primary-foreground font-semibold gap-2 mt-1">
+                  <Plus className="h-4 w-4" /> Post New Car
+                </Button>
+              </Link>
+              <Button size="sm" variant="ghost" onClick={signOut} className="w-full text-destructive gap-2">
+                <LogOut className="h-4 w-4" /> Sign Out
+              </Button>
+            </>
           ) : (
             <Link to="/login" onClick={() => setMobileOpen(false)}>
-              <Button size="sm" className="w-full hero-gradient text-primary-foreground font-semibold">Admin Login</Button>
+              <Button size="sm" className="w-full hero-gradient text-primary-foreground font-semibold">Sign In to Sell</Button>
             </Link>
           )}
         </div>

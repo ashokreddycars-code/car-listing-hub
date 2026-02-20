@@ -1,20 +1,40 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useCarById } from "@/hooks/useCars";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import EMICalculator from "@/components/EMICalculator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Fuel, Gauge, Calendar, Phone, MessageCircle, Share2, CheckCircle, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Fuel, Gauge, Calendar, Phone, MessageCircle, Share2, CheckCircle, AlertTriangle, Tag, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const CarDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { data: car, isLoading } = useCarById(id!);
   const [activeImg, setActiveImg] = useState(0);
   const { toast } = useToast();
+  const { user, isAdmin } = useAuth();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [markingAsSold, setMarkingAsSold] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const isOwner = user && car && (user.id === car.user_id || isAdmin);
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -24,6 +44,44 @@ const CarDetail = () => {
     } else {
       await navigator.clipboard.writeText(url);
       toast({ title: "Link copied to clipboard!" });
+    }
+  };
+
+  const handleMarkAsSold = async () => {
+    if (!car) return;
+    setMarkingAsSold(true);
+    try {
+      const { error } = await supabase
+        .from("cars")
+        .update({ status: "sold", is_sold: true })
+        .eq("id", car.id);
+      if (error) throw error;
+      toast({ title: "✅ Marked as Sold", description: "This listing will be automatically removed after 7 days." });
+      queryClient.invalidateQueries({ queryKey: ["car", id] });
+      queryClient.invalidateQueries({ queryKey: ["cars"] });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setMarkingAsSold(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!car) return;
+    setDeleting(true);
+    try {
+      // Delete images from storage
+      for (const img of car.images) {
+        await supabase.storage.from("car-images").remove([img.image_url]);
+      }
+      // Delete car record (cascades to car_images)
+      const { error } = await supabase.from("cars").delete().eq("id", car.id);
+      if (error) throw error;
+      toast({ title: "Listing deleted successfully" });
+      navigate("/");
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+      setDeleting(false);
     }
   };
 
@@ -64,6 +122,9 @@ const CarDetail = () => {
     `Hi, I'm interested in the ${car.brand} ${car.model} (₹${car.price.toLocaleString("en-IN")}) listed on Ashok Reddy Cars. Is it still available?`
   );
 
+  const contactPhone = car.contact_phone || "9000771660";
+  const contactWhatsapp = car.contact_whatsapp || "919000771660";
+
   const statusBadge = car.status === "sold" ? (
     <Badge className="bg-destructive text-destructive-foreground font-bold text-sm px-4 py-1.5">SOLD</Badge>
   ) : car.status === "upcoming" ? (
@@ -84,6 +145,64 @@ const CarDetail = () => {
             <Share2 className="mr-1 h-4 w-4" /> Share
           </Button>
         </div>
+
+        {/* Owner Actions Bar */}
+        {isOwner && (
+          <div className="mb-6 flex flex-wrap gap-3 rounded-xl border border-border bg-muted/50 p-4">
+            <span className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              <Tag className="h-4 w-4 text-primary" />
+              {isAdmin && user?.id !== car.user_id ? "Admin Controls" : "Your Listing"}
+            </span>
+            <div className="ml-auto flex flex-wrap gap-2">
+              {car.status !== "sold" && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="sm" variant="outline" disabled={markingAsSold} className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                      <CheckCircle className="mr-1 h-4 w-4" />
+                      {markingAsSold ? "Updating..." : "Mark as Sold"}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Mark this car as sold?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will mark the {car.brand} {car.model} as sold. The listing will be automatically removed after 7 days.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleMarkAsSold} className="hero-gradient text-primary-foreground">
+                        Yes, Mark as Sold
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button size="sm" variant="outline" disabled={deleting} className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground">
+                    <Trash2 className="mr-1 h-4 w-4" />
+                    {deleting ? "Deleting..." : "Delete Listing"}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete this listing?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently remove the {car.brand} {car.model} listing and all its photos. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Yes, Delete Permanently
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
+        )}
 
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Images */}
@@ -150,50 +269,37 @@ const CarDetail = () => {
               </div>
             )}
 
-            {/* Key Highlights */}
-            <div className="mt-6 rounded-xl border border-border bg-muted/50 p-4">
-              <h3 className="font-heading text-sm font-semibold text-foreground mb-3">Buying from Ashok Reddy Cars includes:</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {["Complete documentation", "RTO transfer assistance", "Insurance guidance", "Genuine KM history", "Multi-point inspection", "Post-sale support"].map((item) => (
-                  <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Contact Buttons */}
             <div className="mt-8 space-y-3">
               {car.status === "sold" ? (
                 <div className="rounded-xl border border-border bg-muted/50 p-4 text-center">
                   <AlertTriangle className="mx-auto h-8 w-8 text-muted-foreground" />
                   <p className="mt-2 font-heading font-semibold text-foreground">This car has been sold</p>
-                  <p className="text-sm text-muted-foreground">Contact us for similar options</p>
-                  <a href="tel:+919000771660" className="mt-3 inline-block">
+                  <p className="text-sm text-muted-foreground">Browse other available cars</p>
+                  <Link to="/" className="mt-3 inline-block">
                     <Button className="hero-gradient text-primary-foreground font-semibold">
-                      <Phone className="mr-2 h-4 w-4" /> Call for Similar Cars
+                      View Available Cars
                     </Button>
-                  </a>
+                  </Link>
                 </div>
               ) : car.status === "upcoming" ? (
-                <div className="rounded-xl border border-yellow-300 bg-yellow-50 p-4 text-center">
+                <div className="rounded-xl border border-border bg-muted/50 p-4 text-center">
                   <p className="font-heading font-semibold text-foreground">🔔 This car is coming soon!</p>
                   <p className="text-sm text-muted-foreground mt-1">Call us to reserve or get notified</p>
-                  <a href="tel:+919000771660" className="mt-3 inline-block">
+                  <a href={`tel:+${contactPhone}`} className="mt-3 inline-block">
                     <Button className="hero-gradient text-primary-foreground font-semibold">
-                      <Phone className="mr-2 h-4 w-4" /> Reserve Now — 9000 771 660
+                      <Phone className="mr-2 h-4 w-4" /> Reserve Now
                     </Button>
                   </a>
                 </div>
               ) : (
                 <>
-                  <a href="tel:+919000771660">
+                  <a href={`tel:+${contactPhone.replace(/\D/g, "")}`}>
                     <Button className="w-full hero-gradient text-primary-foreground font-semibold" size="lg">
-                      <Phone className="mr-2 h-5 w-5" /> Call Now — 9000 771 660
+                      <Phone className="mr-2 h-5 w-5" /> Call Seller — {contactPhone}
                     </Button>
                   </a>
-                  <a href={`https://wa.me/919000771660?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer">
+                  <a href={`https://wa.me/${contactWhatsapp.replace(/\D/g, "")}?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer">
                     <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground mt-3" size="lg">
                       <MessageCircle className="mr-2 h-5 w-5" /> Chat on WhatsApp
                     </Button>

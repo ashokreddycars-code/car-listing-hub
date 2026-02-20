@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,8 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/admin";
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,11 +24,11 @@ const Login = () => {
     try {
       if (isSignUp) {
         await signUp(email, password);
-        toast({ title: "Account created! You are now the admin." });
+        toast({ title: "Account created!", description: "Check your email to verify your account." });
       } else {
         await signIn(email, password);
+        navigate(redirect);
       }
-      navigate("/admin");
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -40,10 +42,10 @@ const Login = () => {
         <div className="mb-6 text-center">
           <img src={logo} alt="Ashok Reddy Cars" className="mx-auto h-14 w-auto rounded" />
           <h1 className="mt-3 font-heading text-2xl font-bold text-foreground">
-            {isSignUp ? "Create Admin Account" : "Admin Login"}
+            {isSignUp ? "Create Account" : "Sign In"}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {isSignUp ? "First signup becomes admin" : "Sign in to manage listings"}
+            {isSignUp ? "Join to list and manage your cars" : "Sign in to your account"}
           </p>
         </div>
 
@@ -65,7 +67,7 @@ const Login = () => {
           onClick={() => setIsSignUp(!isSignUp)}
           className="mt-4 block w-full text-center text-sm text-muted-foreground hover:text-primary transition-colors"
         >
-          {isSignUp ? "Already have an account? Sign in" : "First time? Create admin account"}
+          {isSignUp ? "Already have an account? Sign in" : "Don't have an account? Sign up free"}
         </button>
       </div>
     </div>
@@ -73,3 +75,4 @@ const Login = () => {
 };
 
 export default Login;
+
